@@ -39,70 +39,90 @@ class _TodayView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 76,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              DateFormat('EEEE, d MMMM').format(DateTime.now()).toUpperCase(),
-              style: const TextStyle(
-                fontSize: 12,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textMuted,
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text("Today's Habits"),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _open(context, '/add'),
         icon: const Icon(Symbols.add_rounded),
         label: const Text('Add habit'),
       ),
-      body: BlocBuilder<TodayCubit, TodayState>(
-        builder: (context, state) => switch (state) {
-          TodayLoading() => const TodaySkeleton(),
-          TodayError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      body: SafeArea(
+        child: BlocBuilder<TodayCubit, TodayState>(
+          builder: (context, state) => switch (state) {
+            TodayLoading() => const Column(
               children: [
-                Text(message, textAlign: TextAlign.center),
-                TextButton(
-                  onPressed: () => context.read<TodayCubit>().load(),
-                  child: const Text('Retry'),
-                ),
+                _TitleBlock(),
+                Expanded(child: TodaySkeleton()),
               ],
             ),
-          ),
-          TodayLoaded(:final summary) => Column(
-            children: [
-              _ProgressHeader(summary: summary),
-              Expanded(
-                child: summary.habits.isEmpty
-                    ? const _EmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 88),
-                        itemCount: summary.habits.length,
-                        itemBuilder: (context, i) => FadeSlideIn(
-                          key: ValueKey(summary.habits[i].habit.id),
-                          index: i,
-                          child: _HabitTile(
-                            item: summary.habits[i],
-                            onOpen: () => _open(
-                              context,
-                              '/habit/${summary.habits[i].habit.id}',
-                            ),
-                          ),
-                        ),
-                      ),
+            TodayError(:final message) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(message, textAlign: TextAlign.center),
+                  TextButton(
+                    onPressed: () => context.read<TodayCubit>().load(),
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
-            ],
+            ),
+            TodayLoaded(:final summary) => RefreshIndicator(
+              onRefresh: () => context.read<TodayCubit>().load(silent: true),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 96),
+                children: [
+                  const _TitleBlock(),
+                  _ProgressHeader(summary: summary),
+                  if (summary.habits.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 48),
+                      child: _EmptyState(),
+                    ),
+                  for (final (i, item) in summary.habits.indexed)
+                    FadeSlideIn(
+                      key: ValueKey(item.habit.id),
+                      index: i,
+                      child: _HabitTile(
+                        item: item,
+                        onOpen: () => _open(context, '/habit/${item.habit.id}'),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _TitleBlock extends StatelessWidget {
+  const _TitleBlock();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            DateFormat('EEEE, d MMMM').format(DateTime.now()).toUpperCase(),
+            style: const TextStyle(
+              fontSize: 12,
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textMuted,
+            ),
           ),
-        },
+          const SizedBox(height: 2),
+          Text(
+            "Today's Habits",
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w800, color: AppColors.ink),
+          ),
+        ],
       ),
     );
   }
@@ -117,24 +137,30 @@ class _ProgressHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final total = summary.habits.length;
+    final serif = theme.textTheme.headlineSmall?.copyWith(
+      fontFamily: 'Georgia',
+      fontFamilyFallback: const ['serif'],
+      fontWeight: FontWeight.w700,
+      color: AppColors.ink,
+    );
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFFF1DC), AppColors.card],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: AppColors.softShadow,
       ),
-      child: Column(
+      child: Row(
         children: [
           SizedBox(
-            width: 240,
-            height: 240,
+            width: 112,
+            height: 112,
             child: TweenAnimationBuilder<double>(
               key: ValueKey('${summary.doneCount}/$total'),
               tween: Tween(begin: 0.0, end: 1.0),
@@ -148,60 +174,61 @@ class _ProgressHeader extends StatelessWidget {
                       ? 0
                       : summary.earnedPoints / summary.totalPoints * t,
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Symbols.local_fire_department_rounded,
-                        fill: 1,
-                        size: 36,
-                        color: AppColors.peach,
-                      ),
-                      Text(
-                        '${summary.doneCount}/$total',
-                        style: theme.textTheme.displayMedium?.copyWith(
-                          fontFamily: 'Georgia',
-                          fontFamilyFallback: const ['serif'],
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink,
-                          height: 1.05,
-                        ),
-                      ),
-                      Text(
-                        'habits done',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                    ],
+                child: const Center(
+                  child: Icon(
+                    Symbols.local_fire_department_rounded,
+                    fill: 1,
+                    size: 30,
+                    color: AppColors.peach,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.sand.withValues(alpha: 0.6),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Symbols.star_rounded,
-                  fill: 1,
-                  size: 18,
-                  color: AppColors.primaryDark,
-                ),
-                const SizedBox(width: 6),
                 Text(
-                  '${summary.earnedPoints} / ${summary.totalPoints} points',
-                  style: const TextStyle(
-                    color: AppColors.onAccent,
-                    fontWeight: FontWeight.w800,
+                  "TODAY'S PROGRESS",
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.textMuted,
+                    letterSpacing: 1.1,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text('${summary.doneCount} of $total done', style: serif),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.sand.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Symbols.star_rounded,
+                        fill: 1,
+                        size: 16,
+                        color: AppColors.primaryDark,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${summary.earnedPoints} / ${summary.totalPoints} pts',
+                        style: const TextStyle(
+                          color: AppColors.onAccent,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -228,8 +255,8 @@ class _SegmentedRingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const stroke = 18.0;
-    const innerStroke = 7.0;
+    final stroke = size.shortestSide * 0.1;
+    final innerStroke = stroke * 0.4;
     final center = size.center(Offset.zero);
     final n = segments < 1 ? 7 : segments;
     final radius = (size.shortestSide - stroke) / 2;
@@ -260,7 +287,7 @@ class _SegmentedRingPainter extends CustomPainter {
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
       ..color = AppColors.primary.withValues(alpha: 0.45)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, stroke * 0.45);
 
     for (var i = 0; i < n; i++) {
       final start = -math.pi / 2 + i * slot + gap / 2 + capAngle;
@@ -274,7 +301,10 @@ class _SegmentedRingPainter extends CustomPainter {
     }
 
     // Inner points ring.
-    final innerRect = Rect.fromCircle(center: center, radius: radius - 30);
+    final innerRect = Rect.fromCircle(
+      center: center,
+      radius: radius - stroke * 1.7,
+    );
     canvas.drawArc(
       innerRect,
       0,
