@@ -39,38 +39,147 @@ class _Content extends StatelessWidget {
     final theme = Theme.of(context);
     final habit = detail.habit;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
       children: [
-        Text(habit.name, style: theme.textTheme.headlineMedium),
-        const SizedBox(height: 8),
-        if (habit.description.isNotEmpty) Text(habit.description),
-        const SizedBox(height: 12),
-        Chip(label: Text('${habit.points} points')),
-        const SizedBox(height: 24),
-        Text('Last 7 days', style: theme.textTheme.titleMedium),
-        const SizedBox(height: 4),
         Text(
-          '${detail.doneInLast7}/7 done · current streak ${detail.currentStreak}',
+          habit.name,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
-        const SizedBox(height: 12),
+        if (habit.description.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            habit.description,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: AppColors.textMuted,
+            ),
+          ),
+        ],
+        const SizedBox(height: 20),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [for (final d in detail.last7Days) _DayDot(day: d)],
+          children: [
+            Expanded(
+              child: _StatCard(
+                icon: Icons.star_rounded,
+                color: AppColors.accent,
+                value: '${habit.points}',
+                label: 'Points',
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.local_fire_department_rounded,
+                color: const Color(0xFFF97316),
+                value: '${detail.currentStreak}',
+                label: 'Day streak',
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.check_circle_rounded,
+                color: AppColors.success,
+                value: '${detail.doneInLast7}/7',
+                label: 'This week',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Last 7 days',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [for (final d in detail.last7Days) _DayDot(day: d)],
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 32),
-        FilledButton.icon(
-          onPressed: () => context.read<HabitDetailCubit>().toggleToday(
-            habit.id,
-            !detail.isDoneToday,
-          ),
-          icon: Icon(detail.isDoneToday ? Icons.undo : Icons.check),
-          label: Text(
-            detail.isDoneToday
-                ? 'Mark today as not done'
-                : 'Mark today as done',
-          ),
-        ),
+        detail.isDoneToday
+            ? OutlinedButton.icon(
+                onPressed: () => context.read<HabitDetailCubit>().toggleToday(
+                  habit.id,
+                  false,
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                icon: const Icon(Icons.undo_rounded),
+                label: const Text('Mark today as not done'),
+              )
+            : FilledButton.icon(
+                onPressed: () => context.read<HabitDetailCubit>().toggleToday(
+                  habit.id,
+                  true,
+                ),
+                icon: const Icon(Icons.check_rounded),
+                label: const Text('Mark today as done'),
+              ),
       ],
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.icon,
+    required this.color,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.textMuted,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

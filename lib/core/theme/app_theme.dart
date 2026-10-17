@@ -46,15 +46,34 @@ ThemeData buildAppTheme() {
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE4E1FA)),
       ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE4E1FA)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFDC2626)),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFDC2626), width: 2),
+      ),
+      hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
   );

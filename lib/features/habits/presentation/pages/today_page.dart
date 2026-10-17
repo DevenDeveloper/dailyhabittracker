@@ -162,7 +162,21 @@ class _HabitTile extends StatelessWidget {
               ? const TextStyle(decoration: TextDecoration.lineThrough)
               : null,
         ),
-        trailing: Chip(label: Text('${item.habit.points} pts')),
+        subtitle: item.habit.description.isEmpty
+            ? null
+            : Text(
+                item.habit.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+        trailing: Chip(
+          avatar: const Icon(
+            Icons.star_rounded,
+            size: 16,
+            color: AppColors.accent,
+          ),
+          label: Text('${item.habit.points}'),
+        ),
       ),
     );
   }
