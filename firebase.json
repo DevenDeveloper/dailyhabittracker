@@ -1,0 +1,36 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "dailyhabittracker-deven",
+          "appId": "1:731273221173:android:f3ab486ed1a1faf6b14d7c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "dailyhabittracker-deven",
+          "appId": "1:731273221173:ios:eed771e235644b28b14d7c",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "dailyhabittracker-deven",
+          "configurations": {
+            "android": "1:731273221173:android:f3ab486ed1a1faf6b14d7c",
+            "ios": "1:731273221173:ios:eed771e235644b28b14d7c"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
