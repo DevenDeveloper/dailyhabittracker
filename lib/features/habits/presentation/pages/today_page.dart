@@ -117,89 +117,88 @@ class _ProgressHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final total = summary.habits.length;
-    final progress = summary.totalPoints == 0
-        ? 0.0
-        : summary.earnedPoints / summary.totalPoints;
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primaryDark, AppColors.primary, AppColors.rose],
+          colors: [Color(0xFFFFF1DC), AppColors.card],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: AppColors.softShadow,
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Today's progress",
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${summary.earnedPoints} / ${summary.totalPoints}',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    height: 1.1,
-                  ),
-                ),
-                Text(
-                  'points',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${summary.doneCount} of $total completed',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
           SizedBox(
-            width: 120,
-            height: 120,
+            width: 230,
+            height: 230,
             child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: progress),
-              duration: const Duration(milliseconds: 700),
+              key: ValueKey('${summary.doneCount}/$total'),
+              tween: Tween(begin: 0, end: summary.doneCount.toDouble()),
+              duration: const Duration(milliseconds: 800),
               curve: Curves.easeOutCubic,
-              builder: (context, value, _) => CustomPaint(
-                painter: _DonutPainter(value),
+              builder: (context, filled, _) => CustomPaint(
+                painter: _SegmentedRingPainter(segments: total, filled: filled),
                 child: Center(
-                  child: Text(
-                    '${(value * 100).round()}%',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Symbols.local_fire_department_rounded,
+                        fill: 1,
+                        size: 44,
+                        color: AppColors.peach,
+                      ),
+                      Text(
+                        '${summary.doneCount}/$total',
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          fontFamily: 'Georgia',
+                          fontFamilyFallback: const ['serif'],
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                          height: 1.05,
+                        ),
+                      ),
+                      Text(
+                        'habits done',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.sand.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Symbols.star_rounded,
+                  fill: 1,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '${summary.earnedPoints} / ${summary.totalPoints} points',
+                  style: const TextStyle(
+                    color: AppColors.onAccent,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -208,34 +207,53 @@ class _ProgressHeader extends StatelessWidget {
   }
 }
 
-class _DonutPainter extends CustomPainter {
-  _DonutPainter(this.progress);
+/// One rounded segment per habit; [filled] segments (fractional while
+/// animating) are drawn in the primary colour, clockwise from the top.
+class _SegmentedRingPainter extends CustomPainter {
+  _SegmentedRingPainter({required this.segments, required this.filled});
 
-  final double progress;
+  final int segments;
+  final double filled;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const stroke = 14.0;
-    final rect = Offset.zero & size;
-    final arcRect = rect.deflate(stroke / 2);
+    const stroke = 18.0;
+    final n = segments < 1 ? 7 : segments;
+    final radius = (size.shortestSide - stroke) / 2;
+    final rect = Rect.fromCircle(
+      center: size.center(Offset.zero),
+      radius: radius,
+    );
+
+    final capAngle = (stroke / 2) / radius;
+    final slot = 2 * math.pi / n;
+    final gap = n == 1 ? 0.0 : 0.14;
+    final sweep = math.max(0.02, slot - gap - 2 * capAngle);
 
     final track = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
-      ..color = Colors.white.withValues(alpha: 0.22);
-    canvas.drawArc(arcRect, 0, 2 * math.pi, false, track);
-
-    if (progress <= 0) return;
-    final arc = Paint()
+      ..strokeCap = StrokeCap.round
+      ..color = AppColors.sand.withValues(alpha: 0.55);
+    final done = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
-      ..color = AppColors.sand;
-    canvas.drawArc(arcRect, -math.pi / 2, 2 * math.pi * progress, false, arc);
+      ..color = AppColors.primary;
+
+    for (var i = 0; i < n; i++) {
+      final start = -math.pi / 2 + i * slot + gap / 2 + capAngle;
+      canvas.drawArc(rect, start, sweep, false, track);
+      final f = (filled - i).clamp(0.0, 1.0);
+      if (f > 0) {
+        canvas.drawArc(rect, start, math.max(0.001, sweep * f), false, done);
+      }
+    }
   }
 
   @override
-  bool shouldRepaint(_DonutPainter old) => old.progress != progress;
+  bool shouldRepaint(_SegmentedRingPainter old) =>
+      old.segments != segments || old.filled != filled;
 }
 
 class _HabitTile extends StatelessWidget {
