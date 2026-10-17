@@ -37,15 +37,15 @@ class AnimatedCheck extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDone ? AppColors.success : Colors.transparent,
+              color: isDone ? AppColors.primary : Colors.transparent,
               border: Border.all(
-                color: isDone ? AppColors.success : const Color(0xFFD3BC93),
+                color: isDone ? AppColors.primary : const Color(0xFFD3BC93),
                 width: 2.5,
               ),
               boxShadow: isDone
                   ? [
                       BoxShadow(
-                        color: AppColors.success.withValues(alpha: 0.35),
+                        color: AppColors.primary.withValues(alpha: 0.35),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),

@@ -96,7 +96,8 @@ class _Content extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.card,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: AppColors.softShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,6 +173,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(18),
+        boxShadow: AppColors.softShadow,
       ),
       child: Column(
         children: [
@@ -233,7 +235,7 @@ class _DayDot extends StatelessWidget {
               shape: BoxShape.circle,
               color: day.isDone ? AppColors.success : AppColors.cream,
               border: isToday
-                  ? Border.all(color: AppColors.primary, width: 2.5)
+                  ? Border.all(color: AppColors.peach, width: 3)
                   : null,
             ),
             child: Icon(

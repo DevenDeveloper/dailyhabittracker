@@ -13,21 +13,29 @@ class AppColors {
   static const textMuted = Color(0xFF7D6E6E);
   static const onAccent = Color(0xFF6B4A3A);
   static const card = Color(0xFFFFFAF0);
-  static const doneTint = Color(0xFFE4E7EE); // slate, lightened
+  static const doneTint = Color(0xFFF7E0D8); // peach/rose, lightened
+  static final softShadow = [
+    BoxShadow(
+      color: primary.withValues(alpha: 0.10),
+      blurRadius: 18,
+      offset: const Offset(0, 6),
+    ),
+  ];
   static const border = Color(0xFFE6D2AE);
   static const error = Color(0xFFB4474F);
 
-  static const primary = rose;
+  static const primary = Color(0xFFA85A70); // deep rose, 5.4:1 with white
+  static const primaryDark = Color(0xFF7F3F54);
   static const accent = sand;
-  static const success = slate; // "done"
+  static const success = primary; // "done"
   static const background = cream;
 }
 
 ThemeData buildAppTheme() {
   final scheme = ColorScheme.fromSeed(
-    seedColor: AppColors.rose,
-    primary: AppColors.rose,
-    onPrimary: AppColors.ink,
+    seedColor: AppColors.primary,
+    primary: AppColors.primary,
+    onPrimary: Colors.white,
     surface: AppColors.card,
     onSurface: AppColors.ink,
     error: AppColors.error,
@@ -51,8 +59,8 @@ ThemeData buildAppTheme() {
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.rose,
-      foregroundColor: AppColors.ink,
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.sand,
@@ -69,7 +77,7 @@ ThemeData buildAppTheme() {
       fillColor: AppColors.card,
       border: border(AppColors.border),
       enabledBorder: border(AppColors.border),
-      focusedBorder: border(AppColors.rose, 2),
+      focusedBorder: border(AppColors.primary, 2),
       errorBorder: border(AppColors.error),
       focusedErrorBorder: border(AppColors.error, 2),
       hintStyle: const TextStyle(color: Color(0xFFA8999A)),
@@ -77,8 +85,8 @@ ThemeData buildAppTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.rose,
-        foregroundColor: AppColors.ink,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
@@ -86,8 +94,8 @@ ThemeData buildAppTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.ink,
-        side: const BorderSide(color: AppColors.rose, width: 1.5),
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.primary, width: 1.5),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
