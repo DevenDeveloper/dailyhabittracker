@@ -140,7 +140,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
                           width: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppColors.ink,
                           ),
                         )
                       : const Icon(Symbols.check_rounded),

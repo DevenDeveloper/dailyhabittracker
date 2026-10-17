@@ -133,15 +133,21 @@ class _ProgressHeader extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            width: 230,
-            height: 230,
+            width: 240,
+            height: 240,
             child: TweenAnimationBuilder<double>(
               key: ValueKey('${summary.doneCount}/$total'),
-              tween: Tween(begin: 0, end: summary.doneCount.toDouble()),
+              tween: Tween(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeOutCubic,
-              builder: (context, filled, _) => CustomPaint(
-                painter: _SegmentedRingPainter(segments: total, filled: filled),
+              builder: (context, t, _) => CustomPaint(
+                painter: _SegmentedRingPainter(
+                  segments: total,
+                  filled: summary.doneCount * t,
+                  pointsProgress: summary.totalPoints == 0
+                      ? 0
+                      : summary.earnedPoints / summary.totalPoints * t,
+                ),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -149,7 +155,7 @@ class _ProgressHeader extends StatelessWidget {
                       const Icon(
                         Symbols.local_fire_department_rounded,
                         fill: 1,
-                        size: 44,
+                        size: 36,
                         color: AppColors.peach,
                       ),
                       Text(
@@ -188,7 +194,7 @@ class _ProgressHeader extends StatelessWidget {
                   Symbols.star_rounded,
                   fill: 1,
                   size: 18,
-                  color: AppColors.primary,
+                  color: AppColors.primaryDark,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -207,23 +213,27 @@ class _ProgressHeader extends StatelessWidget {
   }
 }
 
-/// One rounded segment per habit; [filled] segments (fractional while
-/// animating) are drawn in the primary colour, clockwise from the top.
+/// Outer ring: one rounded segment per habit (filled ones glow in the
+/// primary gradient). Inner thin ring: share of today's points earned.
 class _SegmentedRingPainter extends CustomPainter {
-  _SegmentedRingPainter({required this.segments, required this.filled});
+  _SegmentedRingPainter({
+    required this.segments,
+    required this.filled,
+    required this.pointsProgress,
+  });
 
   final int segments;
   final double filled;
+  final double pointsProgress;
 
   @override
   void paint(Canvas canvas, Size size) {
     const stroke = 18.0;
+    const innerStroke = 7.0;
+    final center = size.center(Offset.zero);
     final n = segments < 1 ? 7 : segments;
     final radius = (size.shortestSide - stroke) / 2;
-    final rect = Rect.fromCircle(
-      center: size.center(Offset.zero),
-      radius: radius,
-    );
+    final rect = Rect.fromCircle(center: center, radius: radius);
 
     final capAngle = (stroke / 2) / radius;
     final slot = 2 * math.pi / n;
@@ -234,26 +244,67 @@ class _SegmentedRingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
-      ..color = AppColors.sand.withValues(alpha: 0.55);
+      ..color = AppColors.track;
     final done = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
-      ..color = AppColors.primary;
+      ..shader = const SweepGradient(
+        startAngle: 0,
+        endAngle: 2 * math.pi,
+        colors: [AppColors.primary, AppColors.primaryDark, AppColors.primary],
+        transform: GradientRotation(-math.pi / 2),
+      ).createShader(rect);
+    final glow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round
+      ..color = AppColors.primary.withValues(alpha: 0.45)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
 
     for (var i = 0; i < n; i++) {
       final start = -math.pi / 2 + i * slot + gap / 2 + capAngle;
       canvas.drawArc(rect, start, sweep, false, track);
       final f = (filled - i).clamp(0.0, 1.0);
       if (f > 0) {
-        canvas.drawArc(rect, start, math.max(0.001, sweep * f), false, done);
+        final arcSweep = math.max(0.001, sweep * f);
+        canvas.drawArc(rect, start, arcSweep, false, glow);
+        canvas.drawArc(rect, start, arcSweep, false, done);
       }
+    }
+
+    // Inner points ring.
+    final innerRect = Rect.fromCircle(center: center, radius: radius - 30);
+    canvas.drawArc(
+      innerRect,
+      0,
+      2 * math.pi,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = innerStroke
+        ..color = AppColors.sand.withValues(alpha: 0.6),
+    );
+    if (pointsProgress > 0) {
+      canvas.drawArc(
+        innerRect,
+        -math.pi / 2,
+        2 * math.pi * pointsProgress,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = innerStroke
+          ..strokeCap = StrokeCap.round
+          ..color = AppColors.peach,
+      );
     }
   }
 
   @override
   bool shouldRepaint(_SegmentedRingPainter old) =>
-      old.segments != segments || old.filled != filled;
+      old.segments != segments ||
+      old.filled != filled ||
+      old.pointsProgress != pointsProgress;
 }
 
 class _HabitTile extends StatelessWidget {
@@ -387,7 +438,7 @@ class _EmptyState extends StatelessWidget {
               Symbols.eco_rounded,
               size: 48,
               fill: 1,
-              color: AppColors.primary,
+              color: AppColors.primaryDark,
             ),
           ),
           const SizedBox(height: 20),

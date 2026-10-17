@@ -249,7 +249,7 @@ class _DayDot extends StatelessWidget {
         Text(
           isToday ? 'Today' : DateFormat('d').format(day.date),
           style: theme.textTheme.bodySmall?.copyWith(
-            color: isToday ? AppColors.primary : AppColors.textMuted,
+            color: isToday ? AppColors.primaryDark : AppColors.textMuted,
             fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
