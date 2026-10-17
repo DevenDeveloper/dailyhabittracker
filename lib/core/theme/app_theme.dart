@@ -12,7 +12,7 @@ class AppColors {
   static const ink = Color(0xFF3A2F36);
   static const textMuted = Color(0xFF7D6E6E);
   static const onAccent = Color(0xFF6B4A3A);
-  static const card = Color(0xFFFFFAF0);
+  static const card = Color(0xFFFCF6EA);
   static const doneTint = Color(0xFFE4E8F0); // slate, lightened
   static final softShadow = [
     BoxShadow(
@@ -29,7 +29,7 @@ class AppColors {
   static const track = Color(0xFFDDE3EC); // slate, lightened
   static const accent = sand;
   static const success = primary; // "done"
-  static const background = cream;
+  static const background = Colors.white;
 }
 
 ThemeData buildAppTheme() {
@@ -61,7 +61,8 @@ ThemeData buildAppTheme() {
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.ink,
+      foregroundColor: Colors.white,
+      extendedTextStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.sand,
@@ -87,7 +88,7 @@ ThemeData buildAppTheme() {
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
+        foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),

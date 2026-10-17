@@ -14,8 +14,8 @@ Widget _bone({double? width, required double height, double radius = 16}) =>
     );
 
 Widget _shimmer(Widget child) => Shimmer.fromColors(
-  baseColor: const Color(0xFFEBD6B0),
-  highlightColor: const Color(0xFFFCF3E2),
+  baseColor: const Color(0xFFE8ECF2),
+  highlightColor: const Color(0xFFF7F9FC),
   child: child,
 );
 
