@@ -106,7 +106,7 @@ class _ProgressHeader extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [AppColors.peach, AppColors.rose],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -121,14 +121,14 @@ class _ProgressHeader extends StatelessWidget {
                 Text(
                   "Today's progress",
                   style: theme.textTheme.labelLarge?.copyWith(
-                    color: Colors.white70,
+                    color: AppColors.ink.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   '${summary.earnedPoints} / ${summary.totalPoints}',
                   style: theme.textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
+                    color: AppColors.ink,
                     fontWeight: FontWeight.w800,
                     height: 1.1,
                   ),
@@ -136,7 +136,7 @@ class _ProgressHeader extends StatelessWidget {
                 Text(
                   'points',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.white70,
+                    color: AppColors.ink.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -146,13 +146,13 @@ class _ProgressHeader extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
+                    color: AppColors.cream.withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${summary.doneCount} of $total completed',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.ink,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -174,7 +174,7 @@ class _ProgressHeader extends StatelessWidget {
                   child: Text(
                     '${(value * 100).round()}%',
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
+                      color: AppColors.ink,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -202,7 +202,7 @@ class _DonutPainter extends CustomPainter {
     final track = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
-      ..color = Colors.white.withValues(alpha: 0.2);
+      ..color = AppColors.cream.withValues(alpha: 0.45);
     canvas.drawArc(arcRect, 0, 2 * math.pi, false, track);
 
     if (progress <= 0) return;
@@ -210,7 +210,7 @@ class _DonutPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
-      ..color = AppColors.accent;
+      ..color = AppColors.ink;
     canvas.drawArc(arcRect, -math.pi / 2, 2 * math.pi * progress, false, arc);
   }
 
@@ -232,10 +232,12 @@ class _HabitTile extends StatelessWidget {
       curve: Curves.easeOutCubic,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: item.isDone ? const Color(0xFFEAF8EF) : Colors.white,
+        color: item.isDone ? AppColors.doneTint : AppColors.card,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: item.isDone ? const Color(0xFFBFE8CD) : Colors.transparent,
+          color: item.isDone
+              ? AppColors.slate.withValues(alpha: 0.5)
+              : Colors.transparent,
         ),
       ),
       child: Material(
@@ -265,7 +267,7 @@ class _HabitTile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: item.isDone
                               ? AppColors.textMuted
-                              : const Color(0xFF1F2937),
+                              : AppColors.ink,
                           decoration: item.isDone
                               ? TextDecoration.lineThrough
                               : TextDecoration.none,
@@ -291,8 +293,8 @@ class _HabitTile extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(
-                      alpha: item.isDone ? 0.35 : 0.18,
+                    color: AppColors.sand.withValues(
+                      alpha: item.isDone ? 0.55 : 0.85,
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -303,13 +305,13 @@ class _HabitTile extends StatelessWidget {
                         Symbols.star_rounded,
                         fill: 1,
                         size: 16,
-                        color: AppColors.accent,
+                        color: AppColors.rose,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${item.habit.points}',
                         style: const TextStyle(
-                          color: Color(0xFF8A5A00),
+                          color: AppColors.onAccent,
                           fontWeight: FontWeight.w800,
                         ),
                       ),

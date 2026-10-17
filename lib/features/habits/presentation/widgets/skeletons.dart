@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/theme/app_theme.dart';
+
 Widget _bone({double? width, required double height, double radius = 16}) =>
     Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(radius),
       ),
     );
 
 Widget _shimmer(Widget child) => Shimmer.fromColors(
-  baseColor: const Color(0xFFE6E3F7),
-  highlightColor: const Color(0xFFF8F7FF),
+  baseColor: const Color(0xFFEBD6B0),
+  highlightColor: const Color(0xFFFCF3E2),
   child: child,
 );
 

@@ -65,7 +65,7 @@ class _Content extends StatelessWidget {
               Expanded(
                 child: _StatCard(
                   icon: Symbols.star_rounded,
-                  color: AppColors.accent,
+                  color: AppColors.peach,
                   value: '${habit.points}',
                   label: 'Points',
                 ),
@@ -74,7 +74,7 @@ class _Content extends StatelessWidget {
               Expanded(
                 child: _StatCard(
                   icon: Symbols.local_fire_department_rounded,
-                  color: const Color(0xFFF97316),
+                  color: AppColors.rose,
                   value: '${detail.currentStreak}',
                   label: 'Day streak',
                 ),
@@ -95,7 +95,7 @@ class _Content extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -170,7 +170,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -231,7 +231,7 @@ class _DayDot extends StatelessWidget {
             height: 38,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: day.isDone ? AppColors.success : const Color(0xFFF0EFF8),
+              color: day.isDone ? AppColors.success : AppColors.cream,
               border: isToday
                   ? Border.all(color: AppColors.primary, width: 2.5)
                   : null,
@@ -239,7 +239,7 @@ class _DayDot extends StatelessWidget {
             child: Icon(
               day.isDone ? Symbols.check_rounded : Symbols.remove_rounded,
               size: 18,
-              color: day.isDone ? Colors.white : const Color(0xFFB4B2CC),
+              color: day.isDone ? Colors.white : const Color(0xFFC9B48E),
             ),
           ),
         ),
