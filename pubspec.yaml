@@ -43,7 +43,8 @@ dependencies:
   firebase_core: ^5.0.0
   equatable: ^3.0.0
   intl: ^0.20.3
-
+  shimmer: ^4.0.0
+  material_symbols_icons: ^4.2960.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

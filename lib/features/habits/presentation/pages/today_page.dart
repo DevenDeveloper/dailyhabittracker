@@ -3,12 +3,16 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/today_habit.dart';
 import '../cubits/today_cubit.dart';
 import '../cubits/today_state.dart';
+import '../widgets/animated_check.dart';
+import '../widgets/fade_slide_in.dart';
+import '../widgets/skeletons.dart';
 
 class TodayPage extends StatelessWidget {
   const TodayPage({super.key});
@@ -37,12 +41,12 @@ class _TodayView extends StatelessWidget {
       appBar: AppBar(title: const Text("Today's Habits")),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _open(context, '/add'),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Symbols.add_rounded),
         label: const Text('Add habit'),
       ),
       body: BlocBuilder<TodayCubit, TodayState>(
         builder: (context, state) => switch (state) {
-          TodayLoading() => const Center(child: CircularProgressIndicator()),
+          TodayLoading() => const TodaySkeleton(),
           TodayError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -64,11 +68,15 @@ class _TodayView extends StatelessWidget {
                     : ListView.builder(
                         padding: const EdgeInsets.only(bottom: 88),
                         itemCount: summary.habits.length,
-                        itemBuilder: (context, i) => _HabitTile(
-                          item: summary.habits[i],
-                          onOpen: () => _open(
-                            context,
-                            '/habit/${summary.habits[i].habit.id}',
+                        itemBuilder: (context, i) => FadeSlideIn(
+                          key: ValueKey(summary.habits[i].habit.id),
+                          index: i,
+                          child: _HabitTile(
+                            item: summary.habits[i],
+                            onOpen: () => _open(
+                              context,
+                              '/habit/${summary.habits[i].habit.id}',
+                            ),
                           ),
                         ),
                       ),
@@ -218,42 +226,99 @@ class _HabitTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: item.isDone ? const Color(0xFFEAF8EF) : Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        onTap: onOpen,
-        leading: IconButton(
-          tooltip: item.isDone ? 'Mark not done' : 'Mark done',
-          icon: Icon(
-            item.isDone ? Icons.check_circle : Icons.check_box_outline_blank,
-            color: item.isDone ? AppColors.success : AppColors.textMuted,
-          ),
-          onPressed: () =>
-              context.read<TodayCubit>().toggle(item.habit.id, !item.isDone),
+    final theme = Theme.of(context);
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      decoration: BoxDecoration(
+        color: item.isDone ? const Color(0xFFEAF8EF) : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: item.isDone ? const Color(0xFFBFE8CD) : Colors.transparent,
         ),
-        title: Text(
-          item.habit.name,
-          style: item.isDone
-              ? const TextStyle(decoration: TextDecoration.lineThrough)
-              : null,
-        ),
-        subtitle: item.habit.description.isEmpty
-            ? null
-            : Text(
-                item.habit.description,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-        trailing: Chip(
-          avatar: const Icon(
-            Icons.star_rounded,
-            size: 16,
-            color: AppColors.accent,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onOpen,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 10, 14, 10),
+            child: Row(
+              children: [
+                AnimatedCheck(
+                  isDone: item.isDone,
+                  onTap: () => context.read<TodayCubit>().toggle(
+                    item.habit.id,
+                    !item.isDone,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 250),
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: item.isDone
+                              ? AppColors.textMuted
+                              : const Color(0xFF1F2937),
+                          decoration: item.isDone
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                        child: Text(item.habit.name),
+                      ),
+                      if (item.habit.description.isNotEmpty)
+                        Text(
+                          item.habit.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(
+                      alpha: item.isDone ? 0.35 : 0.18,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Symbols.star_rounded,
+                        fill: 1,
+                        size: 16,
+                        color: AppColors.accent,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${item.habit.points}',
+                        style: const TextStyle(
+                          color: Color(0xFF8A5A00),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          label: Text('${item.habit.points}'),
         ),
       ),
     );

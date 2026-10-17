@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../cubits/add_habit_cubit.dart';
@@ -79,7 +80,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
                   textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     hintText: 'e.g. Drink 2L water',
-                    prefixIcon: Icon(Icons.edit_outlined),
+                    prefixIcon: Icon(Symbols.edit_rounded),
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? 'Name is required'
@@ -103,7 +104,8 @@ class _AddHabitPageState extends State<AddHabitPage> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
-                      Icons.star_rounded,
+                      Symbols.star_rounded,
+                      fill: 1,
                       color: AppColors.accent,
                     ),
                   ),
@@ -141,7 +143,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.check_rounded),
+                      : const Icon(Symbols.check_rounded),
                   label: const Text('Save habit'),
                 ),
               ],
