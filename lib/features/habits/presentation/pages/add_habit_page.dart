@@ -106,7 +106,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
                     prefixIcon: Icon(
                       Symbols.star_rounded,
                       fill: 1,
-                      color: AppColors.peach,
+                      color: AppColors.accent,
                     ),
                   ),
                   validator: (v) {

@@ -39,7 +39,7 @@ class AnimatedCheck extends StatelessWidget {
               shape: BoxShape.circle,
               color: isDone ? AppColors.primary : Colors.transparent,
               border: Border.all(
-                color: isDone ? AppColors.primary : const Color(0xFFD3BC93),
+                color: isDone ? AppColors.primary : const Color(0xFFB7D4CF),
                 width: 2.5,
               ),
               boxShadow: isDone

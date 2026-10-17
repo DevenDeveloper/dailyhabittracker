@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 
-/// Palette: rose #C78997, peach #F5B297, sand #F5D6A2, cream #F5E4C4,
-/// slate #8A99B1; ink/muted/border are neutrals derived from it.
+/// Teal + amber palette on a white canvas.
 class AppColors {
-  static const rose = Color(0xFFC78997);
-  static const peach = Color(0xFFF5B297);
-  static const sand = Color(0xFFF5D6A2);
-  static const cream = Color(0xFFF5E4C4);
-  static const slate = Color(0xFF8A99B1);
+  static const primary = Color(0xFF0F766E); // teal, 5.5:1 with white
+  static const primaryDark = Color(0xFF0B5550);
+  static const primaryLight = Color(0xFF2DB3A5);
 
-  static const ink = Color(0xFF3A2F36);
-  static const textMuted = Color(0xFF7D6E6E);
-  static const onAccent = Color(0xFF6B4A3A);
-  static const card = Color(0xFFFCF6EA);
-  static const doneTint = Color(0xFFE4E8F0); // slate, lightened
+  static const accent = Color(0xFFF59E0B); // amber: points, flame
+  static const accentSoft = Color(0xFFFDE8B4);
+  static const onAccent = Color(0xFF7A4B00);
+
+  static const ink = Color(0xFF10302D);
+  static const textMuted = Color(0xFF5F7774);
+  static const card = Color(0xFFF3FAF8);
+  static const mint = Color(0xFFE6F5F2);
+  static const doneTint = Color(0xFFDFF3EF);
+  static const track = Color(0xFFD8ECE8);
+  static const border = Color(0xFFD3E6E2);
+  static const error = Color(0xFFB42318);
+
+  static const success = primary; // "done"
+  static const background = Colors.white;
+
   static final softShadow = [
     BoxShadow(
       color: primary.withValues(alpha: 0.10),
@@ -21,15 +29,6 @@ class AppColors {
       offset: const Offset(0, 6),
     ),
   ];
-  static const border = Color(0xFFE6D2AE);
-  static const error = Color(0xFFB4474F);
-
-  static const primary = slate;
-  static const primaryDark = Color(0xFF5F6F8C); // slate, darkened for text
-  static const track = Color(0xFFDDE3EC); // slate, lightened
-  static const accent = sand;
-  static const success = primary; // "done"
-  static const background = Colors.white;
 }
 
 ThemeData buildAppTheme() {
@@ -65,8 +64,8 @@ ThemeData buildAppTheme() {
       extendedTextStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: AppColors.sand,
-      selectedColor: AppColors.peach,
+      backgroundColor: AppColors.accentSoft,
+      selectedColor: AppColors.accent,
       checkmarkColor: AppColors.ink,
       side: BorderSide.none,
       labelStyle: const TextStyle(
@@ -82,7 +81,7 @@ ThemeData buildAppTheme() {
       focusedBorder: border(AppColors.primary, 2),
       errorBorder: border(AppColors.error),
       focusedErrorBorder: border(AppColors.error, 2),
-      hintStyle: const TextStyle(color: Color(0xFFA8999A)),
+      hintStyle: const TextStyle(color: Color(0xFF9AB3AF)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
     filledButtonTheme: FilledButtonThemeData(

@@ -149,7 +149,7 @@ class _ProgressHeader extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFF1DC), AppColors.card],
+          colors: [Color(0xFFE3F6F2), AppColors.card],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -179,7 +179,7 @@ class _ProgressHeader extends StatelessWidget {
                     Symbols.local_fire_department_rounded,
                     fill: 1,
                     size: 30,
-                    color: AppColors.peach,
+                    color: AppColors.accent,
                   ),
                 ),
               ),
@@ -207,7 +207,7 @@ class _ProgressHeader extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.sand.withValues(alpha: 0.6),
+                    color: AppColors.accentSoft.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -313,7 +313,7 @@ class _SegmentedRingPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = innerStroke
-        ..color = AppColors.sand.withValues(alpha: 0.6),
+        ..color = AppColors.accentSoft.withValues(alpha: 0.6),
     );
     if (pointsProgress > 0) {
       canvas.drawArc(
@@ -325,7 +325,7 @@ class _SegmentedRingPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = innerStroke
           ..strokeCap = StrokeCap.round
-          ..color = AppColors.peach,
+          ..color = AppColors.accent,
       );
     }
   }
@@ -357,7 +357,7 @@ class _HabitTile extends StatelessWidget {
         border: Border.all(
           color: item.isDone
               ? AppColors.primary.withValues(alpha: 0.3)
-              : Colors.transparent,
+              : AppColors.border,
         ),
       ),
       child: Material(
@@ -413,7 +413,7 @@ class _HabitTile extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.sand.withValues(
+                    color: AppColors.accentSoft.withValues(
                       alpha: item.isDone ? 0.55 : 0.85,
                     ),
                     borderRadius: BorderRadius.circular(20),
@@ -425,7 +425,7 @@ class _HabitTile extends StatelessWidget {
                         Symbols.star_rounded,
                         fill: 1,
                         size: 16,
-                        color: AppColors.rose,
+                        color: AppColors.accent,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -462,7 +462,7 @@ class _EmptyState extends StatelessWidget {
             height: 96,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.sand,
+              color: AppColors.accentSoft,
             ),
             child: const Icon(
               Symbols.eco_rounded,
