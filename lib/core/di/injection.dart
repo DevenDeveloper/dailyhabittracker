@@ -5,6 +5,7 @@ import '../../features/habits/data/datasources/habit_remote_data_source.dart';
 import '../../features/habits/data/repositories/habit_repository_impl.dart';
 import '../../features/habits/domain/repositories/habit_repository.dart';
 import '../../features/habits/domain/usecases/add_habit.dart';
+import '../../features/habits/domain/usecases/delete_habit.dart';
 import '../../features/habits/domain/usecases/get_habit_detail.dart';
 import '../../features/habits/domain/usecases/get_today_habits.dart';
 import '../../features/habits/domain/usecases/set_habit_completion.dart';
@@ -31,9 +32,10 @@ void configureDependencies() {
       () => SetHabitCompletion(getIt(), DateTime.now),
     )
     ..registerLazySingleton<AddHabit>(() => AddHabit(getIt()))
-    ..registerFactory<TodayCubit>(() => TodayCubit(getIt(), getIt()))
+    ..registerLazySingleton<DeleteHabit>(() => DeleteHabit(getIt()))
+    ..registerFactory<TodayCubit>(() => TodayCubit(getIt(), getIt(), getIt()))
     ..registerFactory<AddHabitCubit>(() => AddHabitCubit(getIt()))
     ..registerFactory<HabitDetailCubit>(
-      () => HabitDetailCubit(getIt(), getIt()),
+      () => HabitDetailCubit(getIt(), getIt(), getIt()),
     );
 }

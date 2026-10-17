@@ -14,6 +14,9 @@ abstract class HabitRepository {
     required int points,
   });
 
+  /// Deletes the habit and all of its completions.
+  Future<Either<Failure, Unit>> deleteHabit(String habitId);
+
   /// Ids of habits completed on [day] (date part only).
   Future<Either<Failure, Set<String>>> getCompletedHabitIds(DateTime day);
 

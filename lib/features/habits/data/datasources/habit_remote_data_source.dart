@@ -10,6 +10,7 @@ abstract class HabitRemoteDataSource {
     required String description,
     required int points,
   });
+  Future<void> deleteHabit(String habitId);
   Future<Set<String>> getCompletedHabitIds(String dateKey);
   Future<List<bool>> getCompletions(String habitId, List<String> dateKeys);
   Future<void> setCompletion({
@@ -58,6 +59,18 @@ class FirestoreHabitDataSource implements HabitRemoteDataSource {
       'points': points,
       'createdAt': FieldValue.serverTimestamp(),
     });
+  }
+
+  @override
+  Future<void> deleteHabit(String habitId) async {
+    final completions = await _completions
+        .where('habitId', isEqualTo: habitId)
+        .get();
+    final batch = _firestore.batch()..delete(_habits.doc(habitId));
+    for (final doc in completions.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
   }
 
   @override

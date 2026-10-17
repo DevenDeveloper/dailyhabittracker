@@ -1,16 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/usecase/usecase.dart';
+import '../../domain/usecases/delete_habit.dart';
 import '../../domain/usecases/get_today_habits.dart';
 import '../../domain/usecases/set_habit_completion.dart';
 import 'today_state.dart';
 
 class TodayCubit extends Cubit<TodayState> {
-  TodayCubit(this._getTodayHabits, this._setCompletion)
+  TodayCubit(this._getTodayHabits, this._setCompletion, this._deleteHabit)
     : super(const TodayState.loading());
 
   final GetTodayHabits _getTodayHabits;
   final SetHabitCompletion _setCompletion;
+  final DeleteHabit _deleteHabit;
 
   Future<void> load({bool silent = false}) async {
     if (!silent) emit(const TodayState.loading());
@@ -25,6 +27,14 @@ class TodayCubit extends Cubit<TodayState> {
     final result = await _setCompletion(
       SetHabitCompletionParams(habitId: habitId, isDone: isDone),
     );
+    result.fold(
+      (f) => emit(TodayState.error(f.message)),
+      (_) => load(silent: true),
+    );
+  }
+
+  Future<void> delete(String habitId) async {
+    final result = await _deleteHabit(habitId);
     result.fold(
       (f) => emit(TodayState.error(f.message)),
       (_) => load(silent: true),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -7,6 +8,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/habit_detail.dart';
 import '../cubits/habit_detail_cubit.dart';
 import '../cubits/habit_detail_state.dart';
+import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/fade_slide_in.dart';
 import '../widgets/skeletons.dart';
 
@@ -18,7 +20,32 @@ class HabitDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Habit')),
+      appBar: AppBar(
+        title: const Text('Habit'),
+        actions: [
+          BlocBuilder<HabitDetailCubit, HabitDetailState>(
+            builder: (context, state) => switch (state) {
+              HabitDetailLoaded(:final detail) => IconButton(
+                tooltip: 'Delete habit',
+                icon: const Icon(
+                  Symbols.delete_rounded,
+                  color: AppColors.error,
+                ),
+                onPressed: () async {
+                  final cubit = context.read<HabitDetailCubit>();
+                  final router = GoRouter.of(context);
+                  final ok = await confirmDeleteHabit(
+                    context,
+                    detail.habit.name,
+                  );
+                  if (ok && await cubit.delete(detail.habit.id)) router.pop();
+                },
+              ),
+              _ => const SizedBox.shrink(),
+            },
+          ),
+        ],
+      ),
       body: BlocBuilder<HabitDetailCubit, HabitDetailState>(
         builder: (context, state) => switch (state) {
           HabitDetailLoading() => const DetailSkeleton(),

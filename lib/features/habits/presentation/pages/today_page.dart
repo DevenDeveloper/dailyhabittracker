@@ -12,6 +12,7 @@ import '../../domain/entities/today_habit.dart';
 import '../cubits/today_cubit.dart';
 import '../cubits/today_state.dart';
 import '../widgets/animated_check.dart';
+import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/fade_slide_in.dart';
 import '../widgets/skeletons.dart';
 
@@ -82,9 +83,19 @@ class _TodayView extends StatelessWidget {
                     FadeSlideIn(
                       key: ValueKey(item.habit.id),
                       index: i,
-                      child: _HabitTile(
-                        item: item,
-                        onOpen: () => _open(context, '/habit/${item.habit.id}'),
+                      child: Dismissible(
+                        key: ValueKey('dismiss-${item.habit.id}'),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (_) =>
+                            confirmDeleteHabit(context, item.habit.name),
+                        onDismissed: (_) =>
+                            context.read<TodayCubit>().delete(item.habit.id),
+                        background: const _DeleteBackground(),
+                        child: _HabitTile(
+                          item: item,
+                          onOpen: () =>
+                              _open(context, '/habit/${item.habit.id}'),
+                        ),
                       ),
                     ),
                 ],
@@ -487,6 +498,24 @@ class _EmptyState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _DeleteBackground extends StatelessWidget {
+  const _DeleteBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      padding: const EdgeInsets.only(right: 24),
+      alignment: Alignment.centerRight,
+      decoration: BoxDecoration(
+        color: AppColors.error,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: const Icon(Symbols.delete_rounded, color: Colors.white, fill: 1),
     );
   }
 }

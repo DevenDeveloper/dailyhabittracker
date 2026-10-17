@@ -55,6 +55,12 @@ class HabitRepositoryImpl implements HabitRepository {
   });
 
   @override
+  Future<Either<Failure, Unit>> deleteHabit(String habitId) => _guard(() async {
+    await _dataSource.deleteHabit(habitId);
+    return unit;
+  });
+
+  @override
   Future<Either<Failure, Set<String>>> getCompletedHabitIds(DateTime day) =>
       _guard(() => _dataSource.getCompletedHabitIds(_key(day)));
 
